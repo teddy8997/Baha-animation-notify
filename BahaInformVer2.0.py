@@ -51,10 +51,10 @@ def lineNotify(token, msg):
 def product_df(req_bs):
     list_new = req_bs.find(class_ = "newanime-wrap timeline-ver").findAll(class_ = re.compile(r"anime-content-block"))
     output = []
-    for item in list_new:
-        title = item.find(class_ = "anime-name_for-marquee").text
-        url = item.find(class_ = "anime-card-block").get("href")
-        episode = item.find(class_ = "anime-episode").find('p')
+    for i in range(len(list_new)-1):
+        title = list_new[i].find(class_ = "anime-name_for-marquee").text
+        url = list_new[i].find(class_ = "anime-card-block").get("href")
+        episode = list_new[i].find(class_ = "anime-episode").find('p').text
         output.append({
             "title" : title,
             "url" : url,
@@ -79,7 +79,7 @@ def jb():
         if new_title == b['title'][0]:
             break
         else:
-            msg = "[巴哈姆特動畫瘋] "+ new_title + " " + d['episode'][i] + " " + d['url'][i]
+            msg = "[巴哈姆特動畫瘋] "+ new_title + " " + d['episode'][i] + " " + "https://ani.gamer.com.tw/" + d['url'][i]
             token = '填入自己的token'
             lineNotify(token, msg)
         i = i + 1
