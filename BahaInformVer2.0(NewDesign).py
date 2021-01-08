@@ -49,17 +49,23 @@ def lineNotify(token, msg):
 
 #利用beautiful soup找尋巴哈動畫瘋 動畫的url,動畫名,動畫更新日,動畫集數 並且將這些資訊利用panda套件存成Dataframe
 def product_df(req_bs):
+    url = "https://ani.gamer.com.tw/"
+    req_bs = bs(get_html(url), "html.parser")
     list_new = req_bs.find(class_ = "newanime-wrap timeline-ver").findAll(class_ = re.compile(r"anime-content-block"))
     output = []
-    for i in range(len(list_new)-1):
+    for i in range(len(list_new)-5):
         title = list_new[i].find(class_ = "anime-name_for-marquee").text
         url = list_new[i].find(class_ = "anime-card-block").get("href")
-        episode = list_new[i].find(class_ = "anime-episode").find('p').text
-        output.append({
-            "title" : title,
-            "url" : url,
-            "episode" : episode,
-        })
+        try:
+            episode = list_new[i].find(class_ = "anime-episode").find('p').text
+        except AttributeError :
+            episode = list_new[i].find(class_ = "label-edition color-OVA").text
+        finally:
+            output.append({
+                "title" : title,
+                "url" : url,
+                "episode" : episode
+            })
     df = pd.DataFrame(output)
     return df
 
@@ -75,7 +81,7 @@ def jb():
     b = pd.read_csv("baha2.csv", header=0).head().to_dict() #讀取前一次的csv並轉成dict類型和新抓取的資料做比對，這邊比對前五個動畫有無更新，若有更新將message跟token傳到lineNotify
     
     i = 0;
-    for new_title in d['title'][0:5]:
+    for new_title in d['title'][0:6]:
         if new_title == b['title'][0]:
             break
         else:
